@@ -26,7 +26,7 @@ This file contains implementation details that future contributors (human or LLM
 
 ## Configuration
 
-- `DATAGOUV_ENV` selects the target platform (`prod` by default; set to `demo` only when testing against the staging APIs). The helpers derive both API and public-site URLs from this variable.
+- `DATAGOUV_API_ENV` selects the target platform (`prod` by default; set to `demo` only when testing against the staging APIs). The helpers derive both API and public-site URLs from this variable.
 - `MCP_PORT` defaults to 8000 if not set. Example: `MCP_PORT=8007 uv run python main.py` to use a custom port.
 - `MCP_HOST` defaults to `0.0.0.0` if not set. Set to `127.0.0.1` for local development.
 - The `CHANGELOG.md` file is generated automatically by `tag_version.sh` when creating a release tag—do not edit it manually between releases.

@@ -6,7 +6,7 @@ This document captures the key concepts behind the data.gouv.fr MCP server imple
 
 - Provide a Model Context Protocol (MCP) server that exposes data.gouv.fr datasets and resources to LLM clients such as Cursor, Windsurf, Claude Desktop, Gemini CLI, etc.
 - Offer a comprehensive set of read-only tools that allow chatbots to discover datasets, explore resources, query data, and retrieve metrics.
-- Rely either on the **demo** environment or the **prod** environment: the base URL automatically switches between `https://demo.data.gouv.fr/api/` and `https://www.data.gouv.fr/api/` using the `DATAGOUV_ENV` environment variable (defaults to **prod**).
+- Rely either on the **demo** environment or the **prod** environment: the base URL automatically switches between `https://demo.data.gouv.fr/api/` and `https://www.data.gouv.fr/api/` using the `DATAGOUV_API_ENV` environment variable (defaults to **prod**).
 
 ## Architecture
 
@@ -31,7 +31,7 @@ The server provides 7 read-only tools, each defined in its own module under `too
 | `get_resource_info` | Get detailed information about a specific resource (format, size, MIME type, URL, dataset association, Tabular API availability). | data.gouv.fr API v2 – `GET /2/datasets/resources/{id}/` |
 | `query_resource_data` | Query data from a resource via the Tabular API. Fetches rows from a specific resource to answer questions. | Tabular API |
 | `download_and_parse_resource` | Download and parse a resource that is not accessible via Tabular API (files too large, formats not supported, external URLs). Supports CSV, CSV.GZ, JSON, JSONL. | Direct file download |
-| `get_metrics` | Get metrics (visits, downloads) for a dataset and/or a resource. Returns monthly statistics. **Note:** Only works with `DATAGOUV_ENV=prod`. | Metrics API |
+| `get_metrics` | Get metrics (visits, downloads) for a dataset and/or a resource. Returns monthly statistics. **Note:** Only works with `DATAGOUV_API_ENV=prod`. | Metrics API |
 
 Implementation details:
 - All tools are annotated with `@mcp.tool()` and return plain strings (LLMs handle free-form text better in this case).
@@ -48,7 +48,7 @@ Implementation details:
 - Dataset search + metadata rely on API **v1**; resource metadata relies on API **v2**.
 - Sessions are created ad hoc if not provided, and always closed in `finally` blocks to avoid unclosed connector warnings.
 - All helpers use `httpx` for async HTTP requests.
-- `DATAGOUV_ENV` picks between the demo/prod hosts.
+- `DATAGOUV_API_ENV` picks between the demo/prod hosts.
 
 ## Running locally
 
@@ -88,7 +88,7 @@ The server logs at DEBUG level by default. All tool calls are logged via the sha
 
 ## Deployment checklist
 
-- Ensure `DATAGOUV_ENV` is set correctly for the environment you deploy to so dataset links keep pointing to the right public site.
+- Ensure `DATAGOUV_API_ENV` is set correctly for the environment you deploy to so dataset links keep pointing to the right public site.
 - Expose `MCP_PORT` (defaults to 8000) via the surrounding process manager; the FastMCP app itself is stateless.
 - Front the service with HTTPS if exposed publicly. Clients such as Cursor expect HTTPS in production.
 - The `/health` endpoint can be used for health checks and monitoring.
